@@ -26,6 +26,22 @@ class _Attendance_ScreenState extends State<Attendance_Screen> {
     super.initState();
   }
 
+  void navigateToCameraPage(BuildContext context) async {
+    FaceRecognitionHandler handler = FaceRecognitionHandler();
+    await handler.loadStoredEmbeddings();
+
+    if (handler.storedEmbeddings.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('gada stored embbeding kocak')));
+      return;
+    }
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) =>
+                CameraPage3(embeddings: handler.storedEmbeddings)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,16 +89,17 @@ class _Attendance_ScreenState extends State<Attendance_Screen> {
                               ));
                           try {
                             await fr.loadStoredEmbeddings();
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        CameraPage3(
-                                          embeddings: [],
-                                        )
-                                    // CameraPage(
-                                    //     embeddings: fr.storedEmbeddings)
-                                    ));
+                            navigateToCameraPage(context);
+                            // Navigator.pushReplacement(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //         builder: (BuildContext context) =>
+                            //             CameraPage3(
+                            //               embeddings: [],
+                            //             )
+                            //         // CameraPage(
+                            //         //     embeddings: fr.storedEmbeddings)
+                            //         ));
                           } catch (e) {
                             Navigator.pop(context);
                             showDialog(

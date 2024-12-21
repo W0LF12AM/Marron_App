@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 
 class FaceRecognitionHandler {
   late List<List<double>> storedEmbeddings = [];
-  static const double matchingThreshold = 1.9252375453906844e+34 + 0.0000000001;
+  static const double matchingThreshold = 1;
 
   Future<void> loadStoredEmbeddings() async {
     try {
@@ -22,14 +22,6 @@ class FaceRecognitionHandler {
     } catch (e) {
       print("errornya gara gara : $e");
     }
-  }
-
-  static double _calculateEuclidianDistance(List<double> a, List<double> b) {
-    return sqrt(a
-        .asMap()
-        .entries
-        .map((entry) => pow(entry.value - b[entry.key], 2))
-        .reduce((value, element) => value + element));
   }
 
   Future<List<List<double>>> fetchStoredEmbeddings(String userId) async {
@@ -63,27 +55,5 @@ class FaceRecognitionHandler {
     final Dio dio = Dio();
     await dio.download(downloadUrl, file.path);
     return file;
-  }
-
-  Future<bool> matchLiveInput(List<double> liveEmbedding) async {
-    if (storedEmbeddings.isEmpty) {
-      print('datanya embednya gada kocak');
-      return false;
-    }
-
-    for (var storedEmbedding in storedEmbeddings) {
-      final double distance =
-          _calculateEuclidianDistance(liveEmbedding, storedEmbedding);
-      print('distance : $distance');
-
-      if (distance > matchingThreshold) {
-        print('match found with this DISTANCCDEEEEEEE : $distance');
-
-        return true;
-      }
-    }
-    print('gaketemu bjir');
-    print('gambar yang berhasil diembed : ${storedEmbeddings.length}');
-    return false;
   }
 }

@@ -11,28 +11,14 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 
 class FaceRecognitionService {
   static Interpreter? _interpreter;
+  static const double matchingThreshold = 1;
 
   static Future<void> initializeInterpreter() async {
-    _interpreter = await Interpreter.fromAsset('assets/mobilefacenet.tflite');
-  }
-
-  static Future<File?> captureAndDetectFace(CameraController controller) async {
-    if (!controller.value.isInitialized) {
-      throw Exception('Camera is not initialized');
+    try {
+      _interpreter = await Interpreter.fromAsset('assets/mobilefacenet.tflite');
+    } catch (e) {
+      print('gagal membuat interpreter karena : $e');
     }
-
-    final XFile picture = await controller.takePicture();
-    final imageFile = File(picture.path);
-
-    // Use ML Kit to detect faces
-    final detectedFace = await _detectFace(imageFile);
-    if (detectedFace == null) {
-      print('No face detected!');
-      return null;
-    }
-
-    // Crop the detected face from the image
-    return _cropFace(imageFile, detectedFace);
   }
 
   static Future<Face?> _detectFace(File imageFile) async {
@@ -47,23 +33,6 @@ class FaceRecognitionService {
     return faces.isNotEmpty ? faces.first : null;
   }
 
-  static Future<File> _cropFace(File imageFile, Face face) async {
-    final rawImage = img.decodeImage(imageFile.readAsBytesSync());
-    if (rawImage == null) throw Exception('Unable to decode image');
-
-    final boundingBox = face.boundingBox;
-    final croppedImage = img.copyCrop(
-      rawImage,
-      boundingBox.left.toInt(),
-      boundingBox.top.toInt(),
-      boundingBox.width.toInt(),
-      boundingBox.height.toInt(),
-    );
-
-    final croppedFile = File('${imageFile.path}_cropped.jpg');
-    croppedFile.writeAsBytesSync(img.encodeJpg(croppedImage));
-    return croppedFile;
-  }
 
   static Future<List<List<double>>> generateEmbeddings(
       List<File> images) async {
@@ -83,24 +52,52 @@ class FaceRecognitionService {
 
   static bool isMatch(
       List<double> liveEmbedding, List<List<double>> storedEmbeddings) {
-        print('Live embedding: $liveEmbedding');
+    print('Live embeddings: $liveEmbedding');
+
+    if (storedEmbeddings.isEmpty) {
+      print('stored embedingnya kosong kocak');
+      return false;
+    }
+
     for (var storedEmbedding in storedEmbeddings) {
-      final double distance =
-          _calculateEuclidianDistance(liveEmbedding, storedEmbedding);
-      print('distance-nya : $distance');
-      if (distance < FaceRecognitionHandler.matchingThreshold) {
-        return true;
+      try {
+        print('Processing stored embedding: $storedEmbedding');
+
+        if (liveEmbedding.length != storedEmbedding.length) {
+          print('Length mismatch: liveEmbedding length = ${liveEmbedding.length}, storedEmbedding length = ${storedEmbedding.length}');
+          continue;
+        }
+        final PairEmbedding pair =
+            _calculateEuclidianDistance(liveEmbedding, storedEmbedding);
+        double distance = pair.distance;
+        print('distance-nya : $distance');
+        if (distance < FaceRecognitionHandler.matchingThreshold) {
+          return true;
+        }
+      } catch (e) {
+        print('distance nya : $e');
       }
     }
     return false;
   }
 
-  static double _calculateEuclidianDistance(List<double> a, List<double> b) {
-    return sqrt(a
-        .asMap()
-        .entries
-        .map((entry) => pow(entry.value - b[entry.key], 2))
-        .reduce((value, element) => value + element));
+
+
+  static PairEmbedding _calculateEuclidianDistance(
+      List<double> a, List<double> b) {
+    PairEmbedding pair = PairEmbedding(-5);
+
+    double distance = 0;
+    for (int i = 0; i < a.length; i++) {
+      double diff = a[i] - b[i];
+      distance += diff * diff;
+    }
+    distance = sqrt(distance);
+
+    if (pair.distance == -5 || distance < pair.distance) {
+      pair.distance = distance;
+    }
+    return pair;
   }
 
   static List<double> _runModel(Float32List input) {
@@ -118,17 +115,41 @@ class FaceRecognitionService {
 
     final resizedImage = img.copyResize(rawImage, width: 112, height: 112);
 
-    final Float32List input = Float32List(112 * 112 * 3);
-    int pixelIndex = 0;
-
-    for (int y = 0; y < 112; y++) {
-      for (int x = 0; x < 112; x++) {
-        final pixel = resizedImage.getPixel(x, y);
-        input[pixelIndex++] = ((pixel >> 16) & 0xFF) / 255.0;
-        input[pixelIndex++] = ((pixel >> 8) & 0xFF) / 255.0;
-        input[pixelIndex++] = (pixel & 0xFF) / 255.0;
+    List<double> flattenedList = [];
+    for (int y = 0; y < resizedImage.height; y++) {
+      for (int x = 0; x < resizedImage.width; x++) {
+        int pixel = resizedImage.getPixel(x, y);
+        int r = (pixel >> 16) & 0xff;
+        int g = (pixel >> 8) & 0xff;
+        int b = pixel & 0xff;
+        flattenedList.add(r.toDouble());
+        flattenedList.add(g.toDouble());
+        flattenedList.add(b.toDouble());
       }
     }
-    return input;
+
+    Float32List float32Array = Float32List.fromList(flattenedList);
+    int channels = 3;
+    int height = 112;
+    int width = 112;
+
+    Float32List reshapedArray = Float32List(1 * height * width * channels);
+    for (int c = 0; c < channels; c++) {
+      for (int h = 0; h < height; h++) {
+        for (int w = 0; w < width; w++) {
+          int index = c * height * width + h * width + w;
+          reshapedArray[index] =
+              (float32Array[c * height * width + h * width + w] - 127.5) /
+                  127.5;
+        }
+      }
+    }
+
+    return reshapedArray;
   }
+}
+
+class PairEmbedding {
+  double distance;
+  PairEmbedding(this.distance);
 }

@@ -107,12 +107,15 @@ class _CameraPage3State extends State<CameraPage3> {
   Future<void> _processFaceRecognition(File imageFile) async {
     try {
       final liveEmbedding =
-          await FaceRecognitionService.generateEmbeddings([imageFile]);
+          await FaceRecognitionService.generateLiveEmbedding(imageFile);
 
-      final isAuthenticated = widget.embeddings.any((storedEmbedding) {
-        return FaceRecognitionService.isMatch(
-            liveEmbedding.first, storedEmbedding.cast<List<double>>());
-      });
+      // final isAuthenticated = widget.embeddings.any((storedEmbedding) {
+      //   return FaceRecognitionService.isMatch(
+      //       liveEmbedding.first, storedEmbedding.cast<List<double>>());
+      // });
+
+      final isAuthenticated =
+          await FaceRecognitionService.isMatch(liveEmbedding, widget.embeddings);
 
       if (isAuthenticated) {
         Navigator.push(
@@ -149,15 +152,38 @@ class _CameraPage3State extends State<CameraPage3> {
         // Pindah ke halaman hasil deteksi wajah
         final faceBoundingBox = faces.first.boundingBox;
         final croppedFace = await cropFace(imageFile, faceBoundingBox);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => FaceDetectionResultPage(
-              imageFile: croppedFace,
-              faces: faces,
-            ),
-          ),
-        );
+
+        final liveEmbedding =
+            await FaceRecognitionService.generateLiveEmbedding(croppedFace);
+
+        final isAuthenticated =
+            FaceRecognitionService.isMatch(liveEmbedding, widget.embeddings);
+
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => FaceDetectionResultPage(
+        //       imageFile: croppedFace,
+        //       faces: faces,
+        //     ),
+        //   ),
+        // );
+        if (isAuthenticated) {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => Success_Notofication()));
+        } else {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('Ga Mirip!')));
+        }
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => FaceDetectionResultPage(
+        //       imageFile: croppedFace,
+        //       faces: faces,
+        //     ),
+        //   ),
+        // );
       } else {
         // Jika tidak ada wajah, tampilkan notifikasi
         ScaffoldMessenger.of(context).showSnackBar(
