@@ -54,7 +54,7 @@ class _CameraPage3State extends State<CameraPage3> {
     });
   }
 
-  Future<File> cropFace(File imageFile, Rect boundingBox) async {
+  Future<File> _cropFace(File imageFile, Rect boundingBox) async {
     final bytes = await imageFile.readAsBytes();
     final codec = await ui.instantiateImageCodec(bytes);
     final frame = await codec.getNextFrame();
@@ -89,33 +89,28 @@ class _CameraPage3State extends State<CameraPage3> {
     return croppedFile;
   }
 
-  Future<void> _captureImage() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) {
-      return;
-    }
+  // Future<void> _captureImage() async {
+  //   if (_cameraController == null || !_cameraController!.value.isInitialized) {
+  //     return;
+  //   }
 
-    try {
-      final XFile picture = await _cameraController!.takePicture();
-      final imageFile = File(picture.path);
+  //   try {
+  //     final XFile picture = await _cameraController!.takePicture();
+  //     final imageFile = File(picture.path);
 
-      await _processFaceRecognition(imageFile);
-    } catch (e) {
-      print('error : $e');
-    }
-  }
+  //     await _processFaceRecognition(imageFile);
+  //   } catch (e) {
+  //     print('error : $e');
+  //   }
+  // }
 
   Future<void> _processFaceRecognition(File imageFile) async {
     try {
       final liveEmbedding =
           await FaceRecognitionService.generateLiveEmbedding(imageFile);
 
-      // final isAuthenticated = widget.embeddings.any((storedEmbedding) {
-      //   return FaceRecognitionService.isMatch(
-      //       liveEmbedding.first, storedEmbedding.cast<List<double>>());
-      // });
-
-      final isAuthenticated =
-          await FaceRecognitionService.isMatch(liveEmbedding, widget.embeddings);
+      final isAuthenticated = await FaceRecognitionService.isMatch(
+          liveEmbedding, widget.embeddings);
 
       if (isAuthenticated) {
         Navigator.push(
@@ -132,7 +127,7 @@ class _CameraPage3State extends State<CameraPage3> {
     }
   }
 
-  Future<void> performRecognition() async {
+  Future<void> _performRecognition() async {
     if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
     }
@@ -151,13 +146,15 @@ class _CameraPage3State extends State<CameraPage3> {
       if (faces.isNotEmpty) {
         // Pindah ke halaman hasil deteksi wajah
         final faceBoundingBox = faces.first.boundingBox;
-        final croppedFace = await cropFace(imageFile, faceBoundingBox);
+        final croppedFace = await _cropFace(imageFile, faceBoundingBox);
 
-        final liveEmbedding =
-            await FaceRecognitionService.generateLiveEmbedding(croppedFace);
+        // final liveEmbedding =
+        //     await FaceRecognitionService.generateLiveEmbedding(croppedFace);
 
-        final isAuthenticated =
-            FaceRecognitionService.isMatch(liveEmbedding, widget.embeddings);
+        // final isAuthenticated =
+        //     FaceRecognitionService.isMatch(liveEmbedding, widget.embeddings);
+
+        await _processFaceRecognition(croppedFace);
 
         // Navigator.push(
         //   context,
@@ -168,22 +165,13 @@ class _CameraPage3State extends State<CameraPage3> {
         //     ),
         //   ),
         // );
-        if (isAuthenticated) {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => Success_Notofication()));
-        } else {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('Ga Mirip!')));
-        }
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => FaceDetectionResultPage(
-        //       imageFile: croppedFace,
-        //       faces: faces,
-        //     ),
-        //   ),
-        // );
+        // if (isAuthenticated) {
+        //   Navigator.push(context,
+        //       MaterialPageRoute(builder: (context) => Success_Notofication()));
+        // } else {
+        //   ScaffoldMessenger.of(context)
+        //       .showSnackBar(const SnackBar(content: Text('Ga Mirip!')));
+        // }
       } else {
         // Jika tidak ada wajah, tampilkan notifikasi
         ScaffoldMessenger.of(context).showSnackBar(
@@ -216,7 +204,7 @@ class _CameraPage3State extends State<CameraPage3> {
                     padding: const EdgeInsets.all(20),
                     child: FloatingActionButton(
                       backgroundColor: mainColor,
-                      onPressed: performRecognition,
+                      onPressed: _performRecognition,
                       child: const Icon(
                         Icons.camera_alt,
                         color: secondaryColor,

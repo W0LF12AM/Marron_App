@@ -1,4 +1,6 @@
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -6,11 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:maroon_app/pages/loading_page.dart';
 import 'package:maroon_app/widgets/customButtonMenu.dart';
 import 'package:maroon_app/widgets/default.dart';
 import 'package:image/image.dart' as img;
+import 'package:path_provider/path_provider.dart';
 
 class Profliebutton extends StatefulWidget {
   Profliebutton(
@@ -46,10 +50,20 @@ class _ProfliebuttonState extends State<Profliebutton> {
         final croppedFaces = await _detectAndCropFaces(file);
         if (croppedFaces.isNotEmpty) {
           for (var croppedFace in croppedFaces) {
+            Float32List proecessedImage = await _preprocessImage(croppedFace);
+
+            Float32List reducingEmbedding =
+                reduceEmbeddingWithAverage(proecessedImage);
+
+            final processedFile =
+                File('${Directory.systemTemp.path}/processed_face.png');
+            await processedFile
+                .writeAsBytes(reducingEmbedding.buffer.asUint8List());
+
             String fileName =
                 "faces/$userId/${DateTime.now().millisecondsSinceEpoch}.png";
             final storageRef = FirebaseStorage.instance.ref().child(fileName);
-            await storageRef.putFile(croppedFace);
+            await storageRef.putFile(processedFile);
             print('gambar berhasil di uplot, namanya $fileName');
           }
         } else {
@@ -61,6 +75,24 @@ class _ProfliebuttonState extends State<Profliebutton> {
       }
     }
     Navigator.of(context).pop();
+  }
+
+  Float32List reduceEmbeddingWithAverage(Float32List originalEmbedding) {
+    if (originalEmbedding.length != 37632) {
+      throw Exception('embed orinya kudu 37632');
+    }
+
+    Float32List reducedEmbedding = Float32List(192);
+
+    int segmentSize = 37632 ~/ 192;
+    for (int i = 0; i < 192; i++) {
+      double sum = 0.0;
+      for (int j = 0; j < segmentSize; j++) {
+        sum += originalEmbedding[i * segmentSize + j];
+      }
+      reducedEmbedding[i] = sum / segmentSize;
+    }
+    return reducedEmbedding;
   }
 
   Future<List<File>> _detectAndCropFaces(File imageFile) async {
@@ -96,6 +128,57 @@ class _ProfliebuttonState extends State<Profliebutton> {
     return croppedFiles;
   }
 
+  Future<Float32List> _preprocessImage(File imageFile) async {
+    final rawImage = img.decodeImage(imageFile.readAsBytesSync());
+    if (rawImage == null) throw Exception('gabisa di dikod');
+
+    final resizedImage = img.copyResize(rawImage, width: 112, height: 112);
+
+    List<double> falttenedList = [];
+    for (int y = 0; y < resizedImage.height; y++) {
+      for (int x = 0; x < resizedImage.width; x++) {
+        int pixel = resizedImage.getPixel(x, y);
+        int r = (pixel >> 16) & 0xff;
+        int g = (pixel >> 8) & 0xff;
+        int b = pixel & 0xff;
+        falttenedList.add(r.toDouble());
+        falttenedList.add(g.toDouble());
+        falttenedList.add(b.toDouble());
+      }
+    }
+
+    Float32List float32Array = Float32List.fromList(falttenedList);
+    return float32Array;
+    // int channels = 3;
+    // int width = 112;
+    // int height = 112;
+
+    // Float32List reshapedArray = Float32List(1 * height * width * channels);
+    // for (int c = 0; c < channels; c++) {
+    //   for (int h = 0; h < height; h++) {
+    //     for (int w = 0; w < width; w++) {
+    //       int index = c * height * width + h * width + w;
+    //       reshapedArray[index] =
+    //           (float32Array[c * height * width + h * width + channels] -
+    //                   127.5) /
+    //               127.5;
+    //     }
+    //   }
+    // }
+    // final processedFile = await _getProcessedFile();
+    // print('Saving processed file to: ${processedFile.path}');
+
+    // await processedFile.writeAsBytes(reshapedArray.buffer.asUint8List());
+
+    // return reshapedArray;
+  }
+
+  Future<File> _getProcessedFile() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final processedFile = File('${directory.path}/processed_face.png');
+    return processedFile;
+  }
+
   Future<void> _deleteImage(String folderPath) async {
     try {
       final storageRef = FirebaseStorage.instance.ref().child(folderPath);
@@ -127,7 +210,7 @@ class _ProfliebuttonState extends State<Profliebutton> {
                     child: Column(
                       children: [
                         SvgPicture.asset(
-                          'assets/uploadIcon.svg',
+                          'assets/faceId.svg',
                           width: 80,
                           height: 80,
                           color: mainColor,
@@ -138,7 +221,7 @@ class _ProfliebuttonState extends State<Profliebutton> {
                 ),
                 actions: [
                   CustomButtonMenu(
-                      button_text: 'Upload',
+                      button_text: 'Take Picture',
                       navigate: () async {
                         final userId = FirebaseAuth.instance.currentUser?.uid;
 
