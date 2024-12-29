@@ -1,29 +1,26 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:maroon_app/Model/faceRecognitionServices.dart';
-import 'package:maroon_app/detector/face_detection_result.dart';
 import 'package:maroon_app/pages/loading_page.dart';
-import 'package:maroon_app/services/successNotification.dart';
-import 'package:maroon_app/widgets/default.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
 
-class CameraPage3 extends StatefulWidget {
-  const CameraPage3({super.key, required this.embeddings});
-  final List<List<double>> embeddings;
+class RegistercameraPage extends StatefulWidget {
+  const RegistercameraPage({super.key});
 
   @override
-  State<CameraPage3> createState() => _CameraPage3State();
+  State<RegistercameraPage> createState() => _RegistercameraPageState();
 }
 
-class _CameraPage3State extends State<CameraPage3> {
+class _RegistercameraPageState extends State<RegistercameraPage> {
   CameraController? _cameraController;
   bool _isInitialized = false;
 
@@ -93,30 +90,34 @@ class _CameraPage3State extends State<CameraPage3> {
     return croppedFile;
   }
 
-  // Future<void> _processFaceRecognition(File imageFile) async {
-  //   try {
-  //     final liveEmbedding =
-  //         await FaceRecognitionService.generateLiveEmbedding(imageFile);
+  Future<void> _uploadImageToFirebase(File imageFile) async {
+    try {
+      String? userId = FirebaseAuth.instance.currentUser?.uid;
+      // Upload ke Firebase Storage
+      String fileName =
+          "faces/$userId/${DateTime.now().millisecondsSinceEpoch}.png";
+      await FirebaseStorage.instance.ref(fileName).putFile(imageFile);
+      print('Image uploaded to Firebase: $fileName');
+    } catch (e) {
+      print('Error uploading image to Firebase: $e');
+    }
+  }
 
-  //     final isAuthenticated = await FaceRecognitionService.isMatch(
-  //         liveEmbedding, widget.embeddings);
+  Future<void> _saveImageLocally(File imageFile) async {
+    try {
+      // Dapatkan direktori penyimpanan lokal
+      final directory = await getApplicationDocumentsDirectory();
+      final localPath = '${directory.path}/cropped_face.png';
 
-  //     if (isAuthenticated) {
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => Success_Notofication()),
-  //       );
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text('Face recognition failed!')),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     print('errornya : $e');
-  //   }
-  // }
+      // Simpan gambar ke penyimpanan lokal
+      await imageFile.copy(localPath);
+      print('Image saved locally at: $localPath');
+    } catch (e) {
+      print('Error saving image locally: $e');
+    }
+  }
 
-  Future<void> _performRecognition() async {
+  Future<void> _performRegistration() async {
     if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
     }
@@ -137,29 +138,20 @@ class _CameraPage3State extends State<CameraPage3> {
         final faceBoundingBox = faces.first.boundingBox;
         final croppedFace = await _cropFace(imageFile, faceBoundingBox);
 
-        // final liveEmbedding =
-        //     await FaceRecognitionService.generateLiveEmbedding(croppedFace);
-        Float32List liveEmbedding = await _preprocessImage(croppedFace);
-        // List<double> liveEmbeddingList =
-        //     await FaceRecognitionService.generateLiveEmbedding(croppedFace);
-        // Float32List liveEmbedding = Float32List.fromList(liveEmbeddingList);
+        Float32List embedding = await _preprocessImage(croppedFace);
 
-        Float32List storedEmbedding = await _loadEmbeddingLocally();
+        await _saveEmbeddingLocally(embedding);
 
-        bool isAuthenticated = FaceRecognitionService.isMatch(
-            liveEmbedding.toList(), storedEmbedding);
+        // Upload gambar cropped ke Firebase
+        await _uploadImageToFirebase(croppedFace);
 
+        // Simpan gambar cropped secara lokal
+        await _saveImageLocally(croppedFace);
 
-        if (isAuthenticated) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Success_Notofication()),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Face recognition failed!')),
-          );
-        }
+        // Tampilkan notifikasi sukses
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Face registered successfully!')),
+        );
       } else {
         // Jika tidak ada wajah, tampilkan notifikasi
         ScaffoldMessenger.of(context).showSnackBar(
@@ -169,6 +161,15 @@ class _CameraPage3State extends State<CameraPage3> {
     } catch (e) {
       print('Error saat deteksi wajah: $e');
     }
+  }
+
+  Future<void> _saveEmbeddingLocally(Float32List embedding) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/embedding.json');
+
+    List<double> embeddingList = embedding.toList();
+    await file.writeAsString(json.encode(embeddingList));
+    print('Embedding saved successfully.');
   }
 
   Future<Float32List> _preprocessImage(File imageFile) async {
@@ -194,27 +195,13 @@ class _CameraPage3State extends State<CameraPage3> {
     return float32Array;
   }
 
-  Future<Float32List> _loadEmbeddingLocally() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/embedding.json');
-
-    if (await file.exists()) {
-      String contents = await file.readAsString();
-      List<double> embeddingList = List<double>.from(json.decode(contents));
-      return Float32List.fromList(embeddingList);
-    }
-    throw Exception('Embedding file not found');
-  }
-
- 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: secondaryColor,
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text('Camera'),
-        backgroundColor: secondaryColor,
+        title: const Text('Register Face'),
+        backgroundColor: Colors.blue,
       ),
       body: _isInitialized
           ? Stack(
@@ -228,11 +215,11 @@ class _CameraPage3State extends State<CameraPage3> {
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: FloatingActionButton(
-                      backgroundColor: mainColor,
-                      onPressed: _performRecognition,
+                      backgroundColor: Colors.blue,
+                      onPressed: _performRegistration,
                       child: const Icon(
                         Icons.camera_alt,
-                        color: secondaryColor,
+                        color: Colors.white,
                       ),
                     ),
                   ),

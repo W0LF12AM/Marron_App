@@ -11,6 +11,7 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:maroon_app/pages/loading_page.dart';
+import 'package:maroon_app/pages/registerCamera_page.dart';
 import 'package:maroon_app/widgets/customButtonMenu.dart';
 import 'package:maroon_app/widgets/default.dart';
 import 'package:image/image.dart' as img;
@@ -149,28 +150,6 @@ class _ProfliebuttonState extends State<Profliebutton> {
 
     Float32List float32Array = Float32List.fromList(falttenedList);
     return float32Array;
-    // int channels = 3;
-    // int width = 112;
-    // int height = 112;
-
-    // Float32List reshapedArray = Float32List(1 * height * width * channels);
-    // for (int c = 0; c < channels; c++) {
-    //   for (int h = 0; h < height; h++) {
-    //     for (int w = 0; w < width; w++) {
-    //       int index = c * height * width + h * width + w;
-    //       reshapedArray[index] =
-    //           (float32Array[c * height * width + h * width + channels] -
-    //                   127.5) /
-    //               127.5;
-    //     }
-    //   }
-    // }
-    // final processedFile = await _getProcessedFile();
-    // print('Saving processed file to: ${processedFile.path}');
-
-    // await processedFile.writeAsBytes(reshapedArray.buffer.asUint8List());
-
-    // return reshapedArray;
   }
 
   Future<File> _getProcessedFile() async {
@@ -190,6 +169,37 @@ class _ProfliebuttonState extends State<Profliebutton> {
       }
     } catch (e) {
       print('error deletnya : $e');
+    }
+  }
+
+  Future<void> deleteFiles() async {
+    try {
+      // Dapatkan direktori penyimpanan lokal
+      final directory = await getApplicationDocumentsDirectory();
+
+      // Path untuk file gambar cropped
+      final croppedFaceFile = File('${directory.path}/cropped_face.png');
+      // Path untuk file embedding
+      final embeddingFile = File('${directory.path}/embedding.json');
+
+      // Hapus file gambar cropped jika ada
+      if (await croppedFaceFile.exists()) {
+        await croppedFaceFile.delete();
+        print(
+            'Cropped face image deleted successfully at: ${croppedFaceFile.path}');
+      } else {
+        print('Cropped face image not found at: ${croppedFaceFile.path}');
+      }
+
+      // Hapus file embedding jika ada
+      if (await embeddingFile.exists()) {
+        await embeddingFile.delete();
+        print('Embedding file deleted successfully at: ${embeddingFile.path}');
+      } else {
+        print('Embedding file not found at: ${embeddingFile.path}');
+      }
+    } catch (e) {
+      print('Error deleting files: $e');
     }
   }
 
@@ -220,23 +230,37 @@ class _ProfliebuttonState extends State<Profliebutton> {
                   ),
                 ),
                 actions: [
-                  CustomButtonMenu(
-                      button_text: 'Take Picture',
-                      navigate: () async {
-                        final userId = FirebaseAuth.instance.currentUser?.uid;
+                  Column(
+                    children: [
+                      CustomButtonMenu(
+                          button_text: 'Take Picture',
+                          navigate: () async {
+                            final userId =
+                                FirebaseAuth.instance.currentUser?.uid;
 
-                        if (userId == null) {
-                          print('lu belom login kocak');
-                          return;
-                        }
+                            if (userId == null) {
+                              print('lu belom login kocak');
+                              return;
+                            }
 
-                        await _uploadImage(userId);
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    RegistercameraPage(), // Ganti dengan embeddings yang sesuai
+                              ),
+                            );
+                            // await _uploadImage(userId);
 
-                        if (mounted) {
-                          Navigator.pop(context);
-                        }
-                      },
-                      color: mainColor)
+                            if (mounted) {
+                              Navigator.pop(context);
+                            }
+                          },
+                          color: mainColor),
+                      TextButton(
+                          onPressed: deleteFiles, child: Text('hapus data'))
+                    ],
+                  )
                 ],
               );
             });

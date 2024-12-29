@@ -31,7 +31,6 @@ class FaceRecognitionService {
     return faces.isNotEmpty ? faces.first : null;
   }
 
-
   static Future<List<List<double>>> generateEmbeddings(
       List<File> images) async {
     List<List<double>> embeddings = [];
@@ -49,37 +48,35 @@ class FaceRecognitionService {
   }
 
   static bool isMatch(
-      List<double> liveEmbedding, List<List<double>> storedEmbeddings) {
+      List<double> liveEmbedding, List<double> storedEmbedding) {
     print('Live embeddings: $liveEmbedding');
 
-    if (storedEmbeddings.isEmpty) {
+    if (storedEmbedding.isEmpty) {
       print('stored embedingnya kosong kocak');
       return false;
     }
 
-    for (var storedEmbedding in storedEmbeddings) {
-      try {
-        print('Processing stored embedding: $storedEmbedding');
+    try {
+      print('Processing stored embedding: $storedEmbedding');
 
-        if (liveEmbedding.length != storedEmbedding.length) {
-          print('Length mismatch: liveEmbedding length = ${liveEmbedding.length}, storedEmbedding length = ${storedEmbedding.length}');
-          continue;
-        }
-        final PairEmbedding pair =
-            _calculateEuclidianDistance(liveEmbedding, storedEmbedding);
-        double distance = pair.distance;
-        print('distance-nya : $distance');
-        if (distance < FaceRecognitionHandler.matchingThreshold) {
-          return true;
-        }
-      } catch (e) {
-        print('distance nya : $e');
+      if (liveEmbedding.length != storedEmbedding.length) {
+        print(
+            'Length mismatch: liveEmbedding length = ${liveEmbedding.length}, storedEmbedding length = ${storedEmbedding.length}');
+        return false;
       }
+      final PairEmbedding pair =
+          _calculateEuclidianDistance(liveEmbedding, storedEmbedding);
+      double distance = pair.distance;
+      print('distance-nya : $distance');
+      if (distance < FaceRecognitionHandler.matchingThreshold) {
+        return true;
+      }
+    } catch (e) {
+      print('distance nya : $e');
     }
+
     return false;
   }
-
-
 
   static PairEmbedding _calculateEuclidianDistance(
       List<double> a, List<double> b) {

@@ -80,48 +80,48 @@ class _Attendance_ScreenState extends State<Attendance_Screen> {
                         color: mainColor,
                         button_text: 'Take Attendance',
                         navigate: () async {
-                          final fr = FaceRecognitionHandler();
+                          // final fr = FaceRecognitionHandler();
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    LoadingPage(pesan: 'Fetching Images'),
+                                    CameraPage3(embeddings: []),
                               ));
-                          try {
-                            await fr.loadStoredEmbeddings();
-                            navigateToCameraPage(context);
-                            // Navigator.pushReplacement(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (BuildContext context) =>
-                            //             CameraPage3(
-                            //               embeddings: [],
-                            //             )
-                            //         // CameraPage(
-                            //         //     embeddings: fr.storedEmbeddings)
-                            //         ));
-                          } catch (e) {
-                            Navigator.pop(context);
-                            showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                      title: Text(
-                                        'Error',
-                                        style: Notification_Style,
-                                      ),
-                                      content:
-                                          Text('Failed to fetch data : $e'),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: Text(
-                                              'Ok',
-                                              style: Notification_Style,
-                                            ))
-                                      ],
-                                    ));
-                          }
+                          // try {
+                          //   await fr.loadStoredEmbeddings();
+                          //   navigateToCameraPage(context);
+                          //   // Navigator.pushReplacement(
+                          //   //     context,
+                          //   //     MaterialPageRoute(
+                          //   //         builder: (BuildContext context) =>
+                          //   //             CameraPage3(
+                          //   //               embeddings: [],
+                          //   //             )
+                          //   //         // CameraPage(
+                          //   //         //     embeddings: fr.storedEmbeddings)
+                          //   //         ));
+                          // } catch (e) {
+                          //   Navigator.pop(context);
+                          //   showDialog(
+                          //       context: context,
+                          //       builder: (context) => AlertDialog(
+                          //             title: Text(
+                          //               'Error',
+                          //               style: Notification_Style,
+                          //             ),
+                          //             content:
+                          //                 Text('Failed to fetch data : $e'),
+                          //             actions: [
+                          //               TextButton(
+                          //                   onPressed: () =>
+                          //                       Navigator.pop(context),
+                          //                   child: Text(
+                          //                     'Ok',
+                          //                     style: Notification_Style,
+                          //                   ))
+                          //             ],
+                          //           ));
+                          // }
                         })
                   ],
                 ),
