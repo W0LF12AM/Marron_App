@@ -11,7 +11,8 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:maroon_app/pages/loading_page.dart';
-import 'package:maroon_app/pages/registerCamera_page.dart';
+import 'package:maroon_app/pages/registFace_page.dart';
+import 'package:maroon_app/dump/registerCamera_page.dart';
 import 'package:maroon_app/widgets/customButtonMenu.dart';
 import 'package:maroon_app/widgets/default.dart';
 import 'package:image/image.dart' as img;
@@ -247,7 +248,7 @@ class _ProfliebuttonState extends State<Profliebutton> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    RegistercameraPage(), // Ganti dengan embeddings yang sesuai
+                                    RegistfacePage(), // Ganti dengan embeddings yang sesuai
                               ),
                             );
                             // await _uploadImage(userId);

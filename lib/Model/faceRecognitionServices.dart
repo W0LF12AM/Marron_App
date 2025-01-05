@@ -42,7 +42,7 @@ class FaceRecognitionService {
     return embeddings;
   }
 
-  static Future<List<double>> generateLiveEmbedding(File liveImage) async {
+  static Future<Float32List> generateLiveEmbedding(File liveImage) async {
     final processedImage = await _preprocessImage(liveImage);
     return _runModel(processedImage);
   }
@@ -64,8 +64,7 @@ class FaceRecognitionService {
             'Length mismatch: liveEmbedding length = ${liveEmbedding.length}, storedEmbedding length = ${storedEmbedding.length}');
         return false;
       }
-      final PairEmbedding pair =
-          _calculateEuclidianDistance(liveEmbedding, storedEmbedding);
+      final PairEmbedding pair = _findNearest(liveEmbedding, storedEmbedding);
       double distance = pair.distance;
       print('distance-nya : $distance');
       if (distance < FaceRecognitionHandler.matchingThreshold) {
@@ -78,8 +77,7 @@ class FaceRecognitionService {
     return false;
   }
 
-  static PairEmbedding _calculateEuclidianDistance(
-      List<double> a, List<double> b) {
+  static PairEmbedding _findNearest(List<double> a, List<double> b) {
     PairEmbedding pair = PairEmbedding(-5);
 
     double distance = 0;
@@ -95,14 +93,23 @@ class FaceRecognitionService {
     return pair;
   }
 
-  static List<double> _runModel(Float32List input) {
+  static Float32List _runModel(Float32List input) {
     if (_interpreter == null) {
       throw Exception('Interpreter is not initialized');
     }
     final output = List.filled(192, 0.0).reshape([1, 192]);
     _interpreter!.run(input.reshape([1, 112, 112, 3]), output);
-    return List<double>.from(output[0]);
+    return Float32List.fromList(output[0]); // Ensure this returns Float32List
   }
+
+  // static List<double> _runModel(Float32List input) {
+  //   if (_interpreter == null) {
+  //     throw Exception('Interpreter is not initialized');
+  //   }
+  //   final output = List.filled(192, 0.0).reshape([1, 192]);
+  //   _interpreter!.run(input.reshape([1, 112, 112, 3]), output);
+  //   return List<double>.from(output[0]);
+  // }
 
   static Future<Float32List> _preprocessImage(File imageFile) async {
     final rawImage = img.decodeImage(imageFile.readAsBytesSync());

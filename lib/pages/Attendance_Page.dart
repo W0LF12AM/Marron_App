@@ -5,8 +5,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:maroon_app/Model/faceRecognitionHandler.dart';
 
-import 'package:maroon_app/pages/camera_page3.dart';
 import 'package:maroon_app/pages/loading_page.dart';
+import 'package:maroon_app/pages/recognition_page.dart';
 
 import 'package:maroon_app/widgets/attendanceCard.dart';
 import 'package:maroon_app/widgets/customButtonMenu.dart';
@@ -24,22 +24,6 @@ class _Attendance_ScreenState extends State<Attendance_Screen> {
   @override
   void initState() {
     super.initState();
-  }
-
-  void navigateToCameraPage(BuildContext context) async {
-    FaceRecognitionHandler handler = FaceRecognitionHandler();
-    await handler.loadStoredEmbeddings();
-
-    if (handler.storedEmbeddings.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('gada stored embbeding kocak')));
-      return;
-    }
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (BuildContext context) =>
-                CameraPage3(embeddings: handler.storedEmbeddings)));
   }
 
   @override
@@ -80,48 +64,11 @@ class _Attendance_ScreenState extends State<Attendance_Screen> {
                         color: mainColor,
                         button_text: 'Take Attendance',
                         navigate: () async {
-                          // final fr = FaceRecognitionHandler();
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    CameraPage3(embeddings: []),
+                                builder: (context) => RecognitionPage(),
                               ));
-                          // try {
-                          //   await fr.loadStoredEmbeddings();
-                          //   navigateToCameraPage(context);
-                          //   // Navigator.pushReplacement(
-                          //   //     context,
-                          //   //     MaterialPageRoute(
-                          //   //         builder: (BuildContext context) =>
-                          //   //             CameraPage3(
-                          //   //               embeddings: [],
-                          //   //             )
-                          //   //         // CameraPage(
-                          //   //         //     embeddings: fr.storedEmbeddings)
-                          //   //         ));
-                          // } catch (e) {
-                          //   Navigator.pop(context);
-                          //   showDialog(
-                          //       context: context,
-                          //       builder: (context) => AlertDialog(
-                          //             title: Text(
-                          //               'Error',
-                          //               style: Notification_Style,
-                          //             ),
-                          //             content:
-                          //                 Text('Failed to fetch data : $e'),
-                          //             actions: [
-                          //               TextButton(
-                          //                   onPressed: () =>
-                          //                       Navigator.pop(context),
-                          //                   child: Text(
-                          //                     'Ok',
-                          //                     style: Notification_Style,
-                          //                   ))
-                          //             ],
-                          //           ));
-                          // }
                         })
                   ],
                 ),
