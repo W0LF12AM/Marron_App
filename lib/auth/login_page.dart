@@ -4,10 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:maroon_app/auth/auth_page.dart';
-import 'package:maroon_app/widgets/checkBox.dart';
-import 'package:maroon_app/widgets/default.dart';
-import 'package:maroon_app/widgets/form.dart';
-import 'package:maroon_app/widgets/loginButton.dart';
+import 'package:maroon_app/widgets/others/checkBox.dart';
+import 'package:maroon_app/widgets/others/default.dart';
+import 'package:maroon_app/widgets/others/form.dart';
+import 'package:maroon_app/widgets/button/loginButton.dart';
 
 class Login_Screen extends StatelessWidget {
   Login_Screen({super.key});

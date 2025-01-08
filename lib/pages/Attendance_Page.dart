@@ -3,27 +3,100 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:maroon_app/Model/faceRecognitionHandler.dart';
+import 'package:maroon_app/function/function.dart';
 
-import 'package:maroon_app/pages/loading_page.dart';
-import 'package:maroon_app/pages/recognition_page.dart';
+import 'package:maroon_app/pages/loading/loading_page.dart';
+import 'package:maroon_app/pages/core/recognition_page.dart';
+import 'package:maroon_app/pages/notification/gpsNotFound.dart';
 
-import 'package:maroon_app/widgets/attendanceCard.dart';
-import 'package:maroon_app/widgets/customButtonMenu.dart';
-import 'package:maroon_app/widgets/default.dart';
+import 'package:maroon_app/widgets/card/attendanceCard.dart';
+import 'package:maroon_app/widgets/button/customButtonMenu.dart';
+import 'package:maroon_app/widgets/others/default.dart';
 
 class Attendance_Screen extends StatefulWidget {
-  const Attendance_Screen({super.key, required this.camera});
+  const Attendance_Screen({
+    super.key,
+    required this.camera,
+    required this.kelas,
+    required this.tempat,
+    required this.pertemuan,
+    required this.jam,
+    required this.latitude,
+    required this.longitude,
+    required this.radius,
+  });
   final CameraDescription camera;
+
+  final String kelas;
+  final String tempat;
+  final String pertemuan;
+  final String jam;
+  final double latitude;
+  final double longitude;
+  final double radius;
 
   @override
   State<Attendance_Screen> createState() => _Attendance_ScreenState();
 }
 
 class _Attendance_ScreenState extends State<Attendance_Screen> {
+  String userName = '';
+
   @override
   void initState() {
     super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    String name = await getUserName();
+    setState(() {
+      userName = name;
+    });
+  }
+
+  Future<void> checkLokasiAndNavigate() async {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) =>
+                LoadingPage(pesan: 'Lacak Gps')));
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return;
+      }
+    }
+
+    Position posisi = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    double jarakMeter = Geolocator.distanceBetween(
+        posisi.latitude, posisi.longitude, widget.latitude, widget.longitude);
+
+    Navigator.pop(context);
+
+    if (jarakMeter <= widget.radius) {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => RecognitionPage(
+                    kelas: widget.kelas,
+                    tempat: widget.tempat,
+                    pertemuan: widget.pertemuan,
+                    userName: '',
+                  )));
+    } else {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => GpsNotFound_Screen()));
+    }
   }
 
   @override
@@ -32,7 +105,12 @@ class _Attendance_ScreenState extends State<Attendance_Screen> {
         backgroundColor: secondaryColor,
         body: Column(
           children: [
-            Attendance_Card(),
+            Attendance_Card(
+              kelas: widget.kelas,
+              tempat: widget.tempat,
+              pertemuan: widget.pertemuan,
+              jam: widget.jam,
+            ),
             SizedBox(
               height: 70,
             ),
@@ -64,11 +142,7 @@ class _Attendance_ScreenState extends State<Attendance_Screen> {
                         color: mainColor,
                         button_text: 'Take Attendance',
                         navigate: () async {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RecognitionPage(),
-                              ));
+                          await checkLokasiAndNavigate();
                         })
                   ],
                 ),

@@ -3,19 +3,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:maroon_app/widgets/card/attendanceHistoryCard.dart';
 
 import 'package:maroon_app/widgets/others/default.dart';
 import 'package:maroon_app/widgets/card/scheduleCard.dart';
 import 'package:maroon_app/widgets/others/userHeader.dart';
 
-class SchedulePage extends StatefulWidget {
-  const SchedulePage({super.key});
+class HistoryPage extends StatefulWidget {
+  const HistoryPage({super.key});
 
   @override
-  State<SchedulePage> createState() => _SchedulePageState();
+  State<HistoryPage> createState() => _HistoryPageState();
 }
 
-class _SchedulePageState extends State<SchedulePage> {
+class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +30,7 @@ class _SchedulePageState extends State<SchedulePage> {
           ),
           Center(
             child: Text(
-              'Jadwal Praktikum',
+              'Attendance History',
               style: GoogleFonts.poppins(
                   textStyle:
                       TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -38,8 +39,11 @@ class _SchedulePageState extends State<SchedulePage> {
           SizedBox(
             height: 20,
           ),
-          Schedulecard(
-              jam: '13.00', kelas: 'Algo Pro A', lab: 'Lab MM', semester: '2')
+          Attendancehistorycard(
+              jam: '10.00',
+              kelas: 'Statistika Dasar A',
+              lab: 'Lab SC',
+              semester: '4')
 
           // Jadwal_Praktikum(),
           // SizedBox(

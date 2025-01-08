@@ -1,8 +1,9 @@
 import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:maroon_app/widgets/classCard.dart';
-import 'package:maroon_app/widgets/default.dart';
-import 'package:maroon_app/widgets/userHeader.dart';
+import 'package:maroon_app/widgets/card/classCard.dart';
+import 'package:maroon_app/widgets/others/default.dart';
+import 'package:maroon_app/widgets/others/userHeader.dart';
 
 class CoursePage extends StatefulWidget {
   const CoursePage({super.key});
@@ -28,6 +29,19 @@ class _CoursePageState extends State<CoursePage> {
     );
   }
 
+  bool isClassKeliatan(DateTime endTime) {
+    final now = DateTime.now();
+    return now.isBefore(endTime);
+  }
+
+  DateTime _parseTime(String time) {
+    List<String> parts = time.split('.');
+    int hour = int.parse(parts[0]);
+    int minute = int.parse(parts[1]);
+    DateTime now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, hour, minute);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,20 +60,58 @@ class _CoursePageState extends State<CoursePage> {
             }
             final camera = snapshot.data!;
 
-            return ListView(
-              padding: EdgeInsets.only(top: 0),
-              children: [
-                User_Header(),
-                SizedBox(
-                  height: 27,
-                ),
-                ...List.generate(
-                    3,
-                    (index) => Class_Card(
-                          camera: camera,
-                        ))
-              ],
-            );
+            return StreamBuilder<QuerySnapshot>(
+                stream:
+                    FirebaseFirestore.instance.collection('kelas').snapshots(),
+                builder: (context, kelasSnapshot) {
+                  if (kelasSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (kelasSnapshot.hasError) {
+                    return Center(
+                      child: Text('Error : ${kelasSnapshot.error}'),
+                    );
+                  }
+
+                  final classes = kelasSnapshot.data!.docs;
+
+                  return ListView(
+                    padding: EdgeInsets.only(top: 0),
+                    children: [
+                      User_Header(),
+                      SizedBox(
+                        height: 27,
+                      ),
+                      ...classes.map(
+                        (classDoc) {
+                          String timeString = classDoc['jam'];
+                          List<String> waktu = timeString.split(' - ');
+                          DateTime endTime = _parseTime(waktu[1]);
+                          if (isClassKeliatan(endTime)) {
+                            double latitude = classDoc['latitude'];
+                            double longitude = classDoc['longitude'];
+                            double radius = classDoc['radius'];
+
+                            return Class_Card(
+                                camera: camera,
+                                kelas: classDoc['kelas'],
+                                tempat: classDoc['tempat'],
+                                pertemuan: classDoc['pertemuan'],
+                                jam: timeString,
+                                latitude: latitude, 
+                            longitude: longitude, 
+                            radius: radius);
+                          } else {
+                            return SizedBox.shrink();
+                          }
+                        },
+                      ).toList(),
+                    ],
+                  );
+                });
           }),
     );
   }

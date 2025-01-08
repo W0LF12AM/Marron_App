@@ -19,17 +19,17 @@ class FaceRecognitionService {
     }
   }
 
-  static Future<Face?> _detectFace(File imageFile) async {
-    final inputImage = InputImage.fromFile(imageFile);
-    final faceDetector = GoogleMlKit.vision.faceDetector(
-      FaceDetectorOptions(performanceMode: FaceDetectorMode.accurate),
-    );
+  // static Future<Face?> _detectFace(File imageFile) async {
+  //   final inputImage = InputImage.fromFile(imageFile);
+  //   final faceDetector = GoogleMlKit.vision.faceDetector(
+  //     FaceDetectorOptions(performanceMode: FaceDetectorMode.accurate),
+  //   );
 
-    final faces = await faceDetector.processImage(inputImage);
-    await faceDetector.close();
+  //   final faces = await faceDetector.processImage(inputImage);
+  //   await faceDetector.close();
 
-    return faces.isNotEmpty ? faces.first : null;
-  }
+  //   return faces.isNotEmpty ? faces.first : null;
+  // }
 
   static Future<List<List<double>>> generateEmbeddings(
       List<File> images) async {
@@ -73,7 +73,6 @@ class FaceRecognitionService {
     } catch (e) {
       print('distance nya : $e');
     }
-
     return false;
   }
 
@@ -102,14 +101,6 @@ class FaceRecognitionService {
     return Float32List.fromList(output[0]); // Ensure this returns Float32List
   }
 
-  // static List<double> _runModel(Float32List input) {
-  //   if (_interpreter == null) {
-  //     throw Exception('Interpreter is not initialized');
-  //   }
-  //   final output = List.filled(192, 0.0).reshape([1, 192]);
-  //   _interpreter!.run(input.reshape([1, 112, 112, 3]), output);
-  //   return List<double>.from(output[0]);
-  // }
 
   static Future<Float32List> _preprocessImage(File imageFile) async {
     final rawImage = img.decodeImage(imageFile.readAsBytesSync());

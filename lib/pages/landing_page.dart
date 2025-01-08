@@ -3,8 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:maroon_app/pages/course_page.dart';
+import 'package:maroon_app/pages/history_page.dart';
 import 'package:maroon_app/pages/schedule_page.dart';
-import 'package:maroon_app/widgets/default.dart';
+import 'package:maroon_app/widgets/others/default.dart';
 
 class Landing_Screen extends StatefulWidget {
   const Landing_Screen({super.key});
@@ -17,7 +18,7 @@ class _Landing_ScreenState extends State<Landing_Screen> {
   int _selectedIndex = 0;
   static const List<Widget> _widgetOption = <Widget>[
     CoursePage(),
-    SchedulePage()
+    SchedulePage(),
   ];
 
   void _onItemTap(int index) {
@@ -25,7 +26,6 @@ class _Landing_ScreenState extends State<Landing_Screen> {
       _selectedIndex = index;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class _Landing_ScreenState extends State<Landing_Screen> {
           BottomNavigationBarItem(
               icon: Icon(Icons.all_inbox_rounded), label: "Courses"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.access_alarm_rounded), label: "Schedule")
+              icon: Icon(Icons.access_alarm_rounded), label: "Schedule"),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: secondaryColor,

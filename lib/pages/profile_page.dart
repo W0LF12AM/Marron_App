@@ -4,14 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:maroon_app/auth/login_page.dart';
-import 'package:maroon_app/pages/registered_face_page.dart';
-import 'package:maroon_app/widgets/ProflieButton.dart';
-import 'package:maroon_app/widgets/customButtonMenu.dart';
-import 'package:maroon_app/widgets/default.dart';
-import 'package:maroon_app/widgets/form.dart';
+import 'package:maroon_app/pages/output/registered_face_page.dart';
+import 'package:maroon_app/widgets/button/ProflieButton.dart';
+import 'package:maroon_app/widgets/button/customButtonMenu.dart';
+import 'package:maroon_app/widgets/others/default.dart';
+import 'package:maroon_app/widgets/others/form.dart';
 
-import 'package:maroon_app/widgets/profile.dart';
-import 'package:maroon_app/widgets/profileButtonNavigate.dart';
+import 'package:maroon_app/widgets/others/profile.dart';
+import 'package:maroon_app/widgets/button/profileButtonNavigate.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({super.key});
