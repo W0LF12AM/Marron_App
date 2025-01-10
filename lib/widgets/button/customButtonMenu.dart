@@ -12,7 +12,7 @@ class CustomButtonMenu extends StatelessWidget {
   final navigate;
   final button_text;
   final Color? color;
-  
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

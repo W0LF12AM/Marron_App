@@ -158,8 +158,6 @@ class _ProfliebuttonState extends State<Profliebutton> {
     return processedFile;
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -168,8 +166,10 @@ class _ProfliebuttonState extends State<Profliebutton> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
+                backgroundColor: secondaryColor,
                 title: Text('Submit Faces'),
                 content: Container(
+                  color: secondaryColor,
                   width: double.infinity,
                   height: 100,
                   child: Padding(

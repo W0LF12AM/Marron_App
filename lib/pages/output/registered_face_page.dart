@@ -100,6 +100,7 @@ class _RegisteredFacePageState extends State<RegisteredFacePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: secondaryColor,
       appBar: AppBar(
         backgroundColor: mainColor,
         leading: IconButton(

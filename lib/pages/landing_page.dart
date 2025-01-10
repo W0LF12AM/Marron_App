@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:maroon_app/pages/course_page.dart';
-import 'package:maroon_app/pages/history_page.dart';
+
 import 'package:maroon_app/pages/schedule_page.dart';
 import 'package:maroon_app/widgets/others/default.dart';
 

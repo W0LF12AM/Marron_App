@@ -10,21 +10,21 @@ class Schedulecard extends StatelessWidget {
       required this.lab,
       required this.semester});
 
-  String semester;
-  String kelas;
-  String jam;
-  String lab;
+  final String semester;
+  final String kelas;
+  final String jam;
+  final String lab;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+      padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
       child: Container(
         decoration: BoxDecoration(
             color: secondaryColor,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.12),
+                color: Colors.black.withOpacity(0.08),
                 spreadRadius: 1,
                 blurRadius: 7,
                 offset: Offset(0, 1.5),
@@ -75,13 +75,13 @@ class Schedulecard extends StatelessWidget {
                   Text(
                     jam,
                     style: GoogleFonts.poppins(
-                        fontSize: 15, fontWeight: FontWeight.bold),
+                        fontSize: 15, fontWeight: FontWeight.normal),
                   ),
                   //lab
                   Text(
                     lab,
                     style: GoogleFonts.poppins(
-                        fontSize: 15, fontWeight: FontWeight.bold),
+                        fontSize: 15, fontWeight: FontWeight.normal),
                   )
                 ],
               ),
