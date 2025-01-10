@@ -13,6 +13,7 @@ class GpsNotFound_Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: secondaryColor,
       body: Padding(
         padding:
             const EdgeInsets.only(top: 170, left: 30, right: 30, bottom: 170),
