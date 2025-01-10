@@ -33,6 +33,10 @@ var Notification_Style = GoogleFonts.poppins(
     textStyle:
         TextStyle(fontWeight: FontWeight.bold, color: mainColor, fontSize: 30));
 
+var FakeGps_Style = GoogleFonts.poppins(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.bold, color: smt12Color, fontSize: 30));
+
 var Notification_Failed_Style = GoogleFonts.poppins(
     textStyle: TextStyle(
         fontWeight: FontWeight.bold, color: smt12Color, fontSize: 30));

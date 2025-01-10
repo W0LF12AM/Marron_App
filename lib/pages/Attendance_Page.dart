@@ -1,14 +1,16 @@
 // ignore_for_file: prefer_const_constructors, camel_case_types, prefer_const_literals_to_create_immutables
+
 import 'package:camera/camera.dart';
+import 'package:detect_fake_location/detect_fake_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:maroon_app/Model/faceRecognitionHandler.dart';
 import 'package:maroon_app/function/function.dart';
 
 import 'package:maroon_app/pages/loading/loading_page.dart';
 import 'package:maroon_app/pages/core/recognition_page.dart';
+import 'package:maroon_app/pages/notification/fakeGpsNotification.dart';
 import 'package:maroon_app/pages/notification/gpsNotFound.dart';
 
 import 'package:maroon_app/widgets/card/attendanceCard.dart';
@@ -142,7 +144,21 @@ class _Attendance_ScreenState extends State<Attendance_Screen> {
                         color: mainColor,
                         button_text: 'Take Attendance',
                         navigate: () async {
-                          await checkLokasiAndNavigate();
+                          try {
+                            bool isLokasiFake =
+                                await DetectFakeLocation().detectFakeLocation();
+                            if (isLokasiFake) {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          Fakegpsnotification()));
+                              return;
+                            }
+                            await checkLokasiAndNavigate();
+                          } catch (e) {
+                            print('Error bangg : $e');
+                          }
                         })
                   ],
                 ),
