@@ -194,6 +194,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
+                                backgroundColor: secondaryColor,
                                 title: Text('Profile Edit'),
                                 content: Container(
                                   width: double.infinity,

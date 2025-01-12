@@ -42,7 +42,7 @@ class _User_HeaderState extends State<User_Header> {
         //user profile
         GestureDetector(
           onTap: () {
-            Navigator.push(
+            Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                     builder: (BuildContext context) => ProfilePage()));

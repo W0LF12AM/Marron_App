@@ -8,11 +8,12 @@ import 'package:maroon_app/widgets/others/default.dart';
 class Success_Notofication extends StatelessWidget {
   Success_Notofication({super.key, required this.pesan});
 
-  String pesan;
+  final String pesan;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: secondaryColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 110),
         child: Center(

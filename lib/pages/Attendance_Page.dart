@@ -84,6 +84,8 @@ class _Attendance_ScreenState extends State<Attendance_Screen> {
     Navigator.pop(context);
 
     if (jarakMeter <= widget.radius) {
+      print('latitude user : ${posisi.latitude}');
+      print('longitude user : ${posisi.longitude}');
       print('Jarak antara user dan lokasi : $jarakMeter');
       print('Radius toleransi antara user dan lokasi : ${widget.radius}');
       Navigator.pushReplacement(
@@ -96,6 +98,8 @@ class _Attendance_ScreenState extends State<Attendance_Screen> {
                     userName: '',
                   )));
     } else {
+      print('latitude user : ${posisi.latitude}');
+      print('longitude user : ${posisi.longitude}');
       print('Jarak antara user dan lokasi : $jarakMeter');
       print('Radius toleransi antara user dan lokasi : ${widget.radius}');
       Navigator.pushReplacement(

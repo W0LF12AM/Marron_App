@@ -7,6 +7,7 @@ import 'package:lottie/lottie.dart';
 import 'package:maroon_app/Model/user_model.dart';
 import 'package:maroon_app/data/database_helper.dart';
 import 'package:maroon_app/pages/loading/loading_page.dart';
+import 'package:maroon_app/pages/profile_page.dart';
 import 'package:maroon_app/widgets/others/default.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -108,7 +109,10 @@ class _RegisteredFacePageState extends State<RegisteredFacePage> {
           color: secondaryColor,
           iconSize: 28,
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => ProfilePage()));
           },
         ),
         title: Text(
@@ -189,6 +193,7 @@ class _RegisteredFacePageState extends State<RegisteredFacePage> {
                             context: context,
                             builder: (context) {
                               return AlertDialog(
+                                backgroundColor: secondaryColor,
                                 title: Center(
                                   child: Text(
                                     'WARNING !',

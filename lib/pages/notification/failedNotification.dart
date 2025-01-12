@@ -11,6 +11,7 @@ class Failednotification extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: secondaryColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 110),
         child: Center(
@@ -23,7 +24,7 @@ class Failednotification extends StatelessWidget {
                 style: Notification_Failed_Style,
               ),
               Text(
-                'Lu siapa bejir....!',
+                'Wajah tidak dikenali :(',
                 style: GoogleFonts.poppins(textStyle: TextStyle()),
               ),
               SizedBox(

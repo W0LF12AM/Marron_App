@@ -149,6 +149,7 @@ class _RegistfacePageState extends State<RegistfacePage> {
     return Scaffold(
       backgroundColor: secondaryColor,
       appBar: AppBar(
+        backgroundColor: secondaryColor,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded),
           color: mainColor,
