@@ -1,11 +1,14 @@
 // ignore_for_file: prefer_const_constructors, camel_case_types, prefer_const_literals_to_create_immutables
 
+import 'dart:math';
+
 import 'package:camera/camera.dart';
 import 'package:detect_fake_location/detect_fake_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:maroon_app/Model/geogeo.dart';
 import 'package:maroon_app/function/function.dart';
 
 import 'package:maroon_app/pages/loading/loading_page.dart';
@@ -80,6 +83,30 @@ class _Attendance_ScreenState extends State<Attendance_Screen> {
 
     double jarakMeter = Geolocator.distanceBetween(
         posisi.latitude, posisi.longitude, widget.latitude, widget.longitude);
+
+    // RUMUS HAVERSINE
+    //------------------------------------------------------
+    // double haversine(Location loc1, Location loc2) {
+    //   const r = 6371;
+
+    //   double lat1 = loc1.latitude * pi / 180;
+    //   double lat2 = loc2.latitude * pi / 180;
+    //   double deltaLat = (loc2.latitude - loc1.latitude) * pi / 180;
+    //   double deltaLong = (loc2.longitude - loc1.longitude) * pi / 180;
+
+    //   double a = sin(deltaLat / 2) * sin(deltaLat / 2) +
+    //       cos(lat1) * cos(lat2) * sin(deltaLong / 2) * sin(deltaLong / 2);
+    //   double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    //   return r * c * 1000;
+    // }
+
+    // Location userLocation = Location(posisi.latitude, posisi.longitude);
+    // Location appointedLocation = Location(widget.latitude, widget.longitude);
+
+    // double jarakMeter = haversine(userLocation, appointedLocation);
+
+    //------------------------------------------------------
 
     Navigator.pop(context);
 
