@@ -58,3 +58,7 @@ var Loading_Style = GoogleFonts.poppins(
 var Alert_Dialogue_Style = GoogleFonts.poppins(
     textStyle: TextStyle(
         fontSize: 20, fontWeight: FontWeight.w700, color: secondaryColor));
+
+var Error_Validtion_Style = GoogleFonts.poppins(
+    textStyle: TextStyle(
+        fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black));

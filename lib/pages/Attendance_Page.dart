@@ -81,30 +81,35 @@ class _Attendance_ScreenState extends State<Attendance_Screen> {
     Position posisi = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
-    double jarakMeter = Geolocator.distanceBetween(
-        posisi.latitude, posisi.longitude, widget.latitude, widget.longitude);
+    // double jarakMeter = Geolocator.distanceBetween(
+    //     posisi.latitude, posisi.longitude, widget.latitude, widget.longitude);
 
-    // RUMUS HAVERSINE
+    //HAVERSINE FORMULAZZZZZ
     //------------------------------------------------------
-    // double haversine(Location loc1, Location loc2) {
-    //   const r = 6371;
+    double haversine(Location loc1, Location loc2) {
+      const r = 6371;
 
-    //   double lat1 = loc1.latitude * pi / 180;
-    //   double lat2 = loc2.latitude * pi / 180;
-    //   double deltaLat = (loc2.latitude - loc1.latitude) * pi / 180;
-    //   double deltaLong = (loc2.longitude - loc1.longitude) * pi / 180;
+      double lat1 = loc1.latitude * pi / 180;
+      double lat2 = loc2.latitude * pi / 180;
+      double deltaLat = (loc2.latitude - loc1.latitude) * pi / 180;
+      double deltaLong = (loc2.longitude - loc1.longitude) * pi / 180;
 
-    //   double a = sin(deltaLat / 2) * sin(deltaLat / 2) +
-    //       cos(lat1) * cos(lat2) * sin(deltaLong / 2) * sin(deltaLong / 2);
-    //   double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+      // double deltaLat =
+      //     ((loc2.latitude * pi / 180) - (loc1.latitude * pi / 180));
+      // double deltaLong =
+      //     ((loc2.longitude * pi / 180) - (loc1.longitude * pi / 180));
 
-    //   return r * c * 1000;
-    // }
+      double a = sin(deltaLat / 2) * sin(deltaLat / 2) +
+          cos(lat1) * cos(lat2) * sin(deltaLong / 2) * sin(deltaLong / 2);
+      double c = 2 * atan2(sqrt(a), sqrt(1 - a));
 
-    // Location userLocation = Location(posisi.latitude, posisi.longitude);
-    // Location appointedLocation = Location(widget.latitude, widget.longitude);
+      return r * c * 1000;
+    }
 
-    // double jarakMeter = haversine(userLocation, appointedLocation);
+    Location userLocation = Location(posisi.latitude, posisi.longitude);
+    Location appointedLocation = Location(widget.latitude, widget.longitude);
+
+    double jarakMeter = haversine(userLocation, appointedLocation);
 
     //------------------------------------------------------
 

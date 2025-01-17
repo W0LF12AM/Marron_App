@@ -204,6 +204,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
                                       FormWidget(
+                                        obscurega: false,
                                           hint_text: 'Nama',
                                           label_text: 'Nama',
                                           controller: nameController),
@@ -211,6 +212,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         height: 10,
                                       ),
                                       FormWidget(
+                                         obscurega: false,
                                           hint_text: 'NPM',
                                           label_text: 'NPM',
                                           controller: npmController),
