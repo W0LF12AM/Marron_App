@@ -205,14 +205,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                     children: [
                                       FormWidget(
                                         obscurega: false,
-                                          hint_text: 'Nama',
-                                          label_text: 'Nama',
-                                          controller: nameController),
+                                        hint_text: 'Nama',
+                                        label_text: 'Nama',
+                                        controller: nameController,
+                                      ),
                                       SizedBox(
                                         height: 10,
                                       ),
                                       FormWidget(
-                                         obscurega: false,
+                                          obscurega: false,
                                           hint_text: 'NPM',
                                           label_text: 'NPM',
                                           controller: npmController),
