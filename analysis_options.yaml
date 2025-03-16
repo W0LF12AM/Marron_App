@@ -12,6 +12,8 @@ analyzer:
     prefer_const_constructors: ignore
     non_constant_identifier_names: ignore
     deprecated_member_use: ignore ignore
+    await_only_futures: ignore
+    unused_field: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

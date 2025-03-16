@@ -3,8 +3,6 @@ import 'dart:core';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:image/image.dart' as img;
-import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:maroon_app/Model/faceRecognitionHandler.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
@@ -19,28 +17,6 @@ class FaceRecognitionService {
     }
   }
 
-  // static Future<Face?> _detectFace(File imageFile) async {
-  //   final inputImage = InputImage.fromFile(imageFile);
-  //   final faceDetector = GoogleMlKit.vision.faceDetector(
-  //     FaceDetectorOptions(performanceMode: FaceDetectorMode.accurate),
-  //   );
-
-  //   final faces = await faceDetector.processImage(inputImage);
-  //   await faceDetector.close();
-
-  //   return faces.isNotEmpty ? faces.first : null;
-  // }
-
-  static Future<List<List<double>>> generateEmbeddings(
-      List<File> images) async {
-    List<List<double>> embeddings = [];
-    for (var image in images) {
-      final processedImage = await _preprocessImage(image);
-      final embedding = _runModel(processedImage);
-      embeddings.add(embedding);
-    }
-    return embeddings;
-  }
 
   static Future<Float32List> generateLiveEmbedding(File liveImage) async {
     final processedImage = await _preprocessImage(liveImage);
@@ -98,7 +74,7 @@ class FaceRecognitionService {
     }
     final output = List.filled(192, 0.0).reshape([1, 192]);
     _interpreter!.run(input.reshape([1, 112, 112, 3]), output);
-    return Float32List.fromList(output[0]); // Ensure this returns Float32List
+    return Float32List.fromList(output[0]); 
   }
 
 

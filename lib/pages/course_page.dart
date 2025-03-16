@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:maroon_app/widgets/card/classCard.dart';
 import 'package:maroon_app/widgets/others/default.dart';
 import 'package:maroon_app/widgets/others/userHeader.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CoursePage extends StatefulWidget {
   const CoursePage({super.key});
@@ -15,13 +14,11 @@ class CoursePage extends StatefulWidget {
 
 class _CoursePageState extends State<CoursePage> {
   late Future<CameraDescription> _camerasFuture;
-  bool _isCardVisible = true;
 
   @override
   void initState() {
     super.initState();
     _camerasFuture = getFrontCamera();
-    _checkCardVisibility();
   }
 
   Future<CameraDescription> getFrontCamera() async {
@@ -32,30 +29,9 @@ class _CoursePageState extends State<CoursePage> {
     );
   }
 
-  Future<void> _checkCardVisibility() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    DateTime now = DateTime.now();
-    DateTime? lastVisibleTime =
-        DateTime.tryParse(pref.getString('lastVisibleTime') ?? '');
-
-    if (lastVisibleTime != null) {
-      if (now.isAfter(lastVisibleTime.add(Duration(days: 1)))) {
-        _isCardVisible = true;
-      } else {
-        _isCardVisible = false;
-      }
-    }
-
-    if (_isCardVisible) {
-      await pref.setString('lastVisibleTime', now.toIso8601String());
-    }
-
-    setState(() {});
-  }
-
   bool isClassKeliatan(DateTime endTime) {
     final now = DateTime.now();
-    return now.isBefore(endTime) && _isCardVisible;
+    return now.isBefore(endTime);
   }
 
   DateTime _parseTime(String time) {
@@ -64,6 +40,17 @@ class _CoursePageState extends State<CoursePage> {
     int minute = int.parse(parts[1]);
     DateTime now = DateTime.now();
     return DateTime(now.year, now.month, now.day, hour, minute);
+  }
+
+  Stream<QuerySnapshot> getTodayClass() {
+    DateTime today = DateTime.now();
+    String todayString =
+        DateTime(today.year, today.month, today.day).toIso8601String();
+
+    return FirebaseFirestore.instance
+        .collection("kelas")
+        .where('tanggal', isEqualTo: todayString)
+        .snapshots();
   }
 
   @override
@@ -85,8 +72,7 @@ class _CoursePageState extends State<CoursePage> {
             final camera = snapshot.data!;
 
             return StreamBuilder<QuerySnapshot>(
-                stream:
-                    FirebaseFirestore.instance.collection('kelas').snapshots(),
+                stream: getTodayClass(),
                 builder: (context, kelasSnapshot) {
                   if (kelasSnapshot.connectionState ==
                       ConnectionState.waiting) {
@@ -119,7 +105,6 @@ class _CoursePageState extends State<CoursePage> {
                             double longitude = classDoc['longitude'];
                             double radius = classDoc['radius'];
 
-                            _isCardVisible = false;
                             return Class_Card(
                                 camera: camera,
                                 kelas: classDoc['kelas'],

@@ -3,7 +3,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:maroon_app/auth/auth_page.dart';
 import 'package:maroon_app/widgets/button/validatorButton.dart';
 import 'package:maroon_app/widgets/others/checkBox.dart';
@@ -189,7 +188,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                         SizedBox(
                           height: 20,
                         ),
-                        CustomButton(
+                        Loginbutton(
                           button_text: "Sign In",
                           navigate: () => _signIn(context),
                         ),

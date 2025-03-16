@@ -4,6 +4,7 @@ import 'package:maroon_app/widgets/others/default.dart';
 
 //controller
 
+// ignore: must_be_immutable
 class FormWidget extends StatelessWidget {
   FormWidget(
       {super.key,

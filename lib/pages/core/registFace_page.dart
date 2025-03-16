@@ -1,4 +1,4 @@
-import 'dart:convert';
+
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
@@ -13,8 +13,7 @@ import 'package:maroon_app/pages/loading/loading_page.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:maroon_app/pages/notification/successNotification.dart';
 import 'package:maroon_app/widgets/others/default.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:image/image.dart' as img;
+
 import 'dart:ui' as ui;
 
 class RegistfacePage extends StatefulWidget {

@@ -3,11 +3,10 @@ import 'package:lottie/lottie.dart';
 import 'package:maroon_app/pages/core/registFace_page.dart';
 import 'package:maroon_app/widgets/button/customButtonMenu.dart';
 import 'package:maroon_app/widgets/others/default.dart';
-import 'package:maroon_app/widgets/button/loginButton.dart';
+
 
 class Noregisteredfacenotification extends StatelessWidget {
   const Noregisteredfacenotification({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

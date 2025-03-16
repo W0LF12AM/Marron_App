@@ -10,10 +10,10 @@ class Attendancehistorycard extends StatelessWidget {
       required this.lab,
       required this.semester});
 
-  String semester;
-  String kelas;
-  String jam;
-  String lab;
+  final String semester;
+  final String kelas;
+  final String jam;
+  final String lab;
 
   @override
   Widget build(BuildContext context) {

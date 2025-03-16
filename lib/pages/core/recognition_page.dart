@@ -1,11 +1,11 @@
-import 'dart:convert';
+
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:maroon_app/Model/faceRecognitionServices.dart';
@@ -142,6 +142,9 @@ class _RecognitionPageState extends State<RecognitionPage> {
 
         for (var user in users) {
           List<double> storedEmbedding = List<double>.from(user.modelData);
+          // ignore: await_only_futures
+
+
           if (await FaceRecognitionService.isMatch(
               liveEmbedding.toList(), storedEmbedding)) {
             isAuthenticated = true;

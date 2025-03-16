@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:maroon_app/widgets/others/default.dart';
 
-class CustomButton extends StatelessWidget {
-  CustomButton({super.key, required this.button_text, required this.navigate});
+class Loginbutton extends StatelessWidget {
+  Loginbutton({super.key, required this.button_text, required this.navigate});
 
   final VoidCallback navigate;
   final button_text;
