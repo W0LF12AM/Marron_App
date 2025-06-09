@@ -1,16 +1,59 @@
-# maroon_app
+# Maroon App
 
-A new Flutter project.
+**Maroon App** adalah aplikasi presensi berbasis Flutter yang menggabungkan teknologi **Face Recognition** dan **Geolocation** untuk memastikan kehadiran pengguna secara aman dan akurat. Aplikasi ini dibuat sebagai proyek personal yang menunjukkan kemampuan dalam pengembangan aplikasi mobile menggunakan Flutter dan berbagai teknologi pendukung.
 
-## Getting Started
+## 🚀 Fitur Utama
 
-This project is a starting point for a Flutter application.
+- 🔒 **Face Recognition**
+  - Menggunakan kamera untuk registrasi dan verifikasi wajah pengguna.
+  - Perbandingan wajah dilakukan secara lokal menggunakan model MobileFaceNet.
+  
+- 📍 **Geolocation-based Attendance**
+  - Menggunakan lokasi GPS untuk memastikan pengguna berada di area yang telah ditentukan saat melakukan presensi.
+  - Presensi hanya dapat dilakukan jika pengguna berada di dalam radius yang diizinkan.
 
-A few resources to get you started if this is your first Flutter project:
+- 💾 **Penyimpanan Data**
+  - Data wajah disimpan secara lokal dan juga diunggah ke Firebase untuk cadangan.
+  - Presensi dan informasi pengguna disimpan di Firebase Firestore.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- 👨‍💼 **Admin Panel (Aplikasi Terpisah)**
+  - Aplikasi monitoring khusus admin untuk melihat aktivitas presensi secara real-time.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🛠️ Teknologi yang Digunakan
+
+- **Flutter** – Framework utama pengembangan aplikasi.
+- **MobileFaceNet** – Model face recognition ringan untuk perangkat mobile.
+- **Firebase** – Autentikasi, penyimpanan data pengguna, dan presensi.
+- **Geolocator** – Mendapatkan lokasi pengguna secara akurat.
+
+## 📸 Cara Kerja Face Recognition
+
+1. Pengguna melakukan registrasi wajah menggunakan kamera.
+2. Embedding wajah disimpan secara lokal dan di Firebase.
+3. Saat presensi, wajah pengguna dibandingkan dengan embedding yang sudah terdaftar.
+4. Jika wajah cocok dan lokasi sesuai, presensi dianggap berhasil.
+
+## 🌍 Geolocation Flow
+
+- Aplikasi meminta izin lokasi.
+- Lokasi pengguna dibandingkan dengan lokasi kantor/sekolah yang ditentukan.
+- Radius ditentukan untuk area presensi (belum menggunakan poligon).
+
+## 🔐 Keamanan
+
+- Data penting disimpan aman di Firebase.
+- Verifikasi wajah mencegah user palsu melakukan presensi.
+
+## 🧪 Status Pengembangan
+
+✅ Versi MVP selesai  
+🔜 Rencana pengembangan selanjutnya:
+- Menambahkan **Geo-fencing** untuk presisi lokasi.
+- Sistem verifikasi wajah saat registrasi akun untuk mencegah penyalahgunaan.
+
+## 👨‍💻 Kontributor
+
+- **Bayu Ilham** – Flutter Developer & Project Owner  
+
+---
+
